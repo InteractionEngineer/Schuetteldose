@@ -1,4 +1,4 @@
-// TODO: Change from 5V to 3.3V and modify Pins
+// TODO: Change from 5V to 3.3V and modify Pins according to wiring diagram
 
 /* FSR testing sketch. 
  
