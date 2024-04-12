@@ -7,6 +7,7 @@ We are working with an Adafruit HUZZAH32 - ESP32 Feather Board. Find it's docume
 * Open any .ino file of this repo in that Arduino IDE
 * Navigate to Tools > Board […] > Board Management > select and install ESP32
 * Choose Tools > Board […] > Adafruit ESP32 Feather
+* Download neccassary libraries
 * Start programming
 
 ## Note
