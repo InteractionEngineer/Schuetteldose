@@ -6,6 +6,22 @@ const unsigned long debounceDelay = 50;
 unsigned long lastDebounceTime = 0;
 int lastTouchState = LOW;
 
+void setup()
+{
+    pinMode(touchPin, INPUT);
+    Serial.begin(9600);
+}
+
+void loop()
+{
+    bool touch = readTouchSensor();
+
+    if (touch)
+    {
+        Serial.println("Touch detected!");
+    }
+}
+
 bool readTouchSensor()
 {
     int reading = digitalRead(touchPin);

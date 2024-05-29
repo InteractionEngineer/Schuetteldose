@@ -6,6 +6,8 @@
 #include <OSCBundle.h>
 #include <OSCData.h>
 
+// TODO: Change to network credentials!
+
 char ssid[] = "*****************"; // your network SSID (name)
 char pass[] = "*******";           // your network password
 
@@ -21,12 +23,24 @@ const char *routeSprayCanCharge = "/sprayar/microcontroller/charge";
 
 OSCErrorCode error;
 
+void setup()
+{
+  setupOSC();
+}
+
+void loop()
+{
+  sendSprayCanState();
+  sendPing();
+  sendSprayCanCharge();
+  delay(1000);
+}
+
 void setupOSC()
 {
   Serial.begin(115200);
 
   // Connect to WiFi network
-  Serial.println();
   Serial.println();
   Serial.print("Connecting to ");
   Serial.println(ssid);
@@ -129,5 +143,5 @@ void sendPing()
 
 void sendSprayCanCharge()
 {
-  // TODO: Implement
+  // TODO: Implement BMS functionality first
 }
