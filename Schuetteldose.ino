@@ -9,8 +9,9 @@ LED switchLED(12);
 Touch outerShell(A6);
 BMS batteryManagement(A13, A12, A2);
 Force appliedForce(A3);
+
 // TODO: Initialisierung führt zu einem RTC (Real Time Clock) Watchdog Timer Fehler
-// Vibration hapticFeedback;
+Vibration hapticFeedback();
 OSC oscHandler("WIFI_SSID", "WIFI_PWD", 8888, 9999, IPAddress(10, 40, 10, 105));
 
 bool atStartup;
