@@ -1,6 +1,6 @@
 #include "OSC.h"
 
-OSC::OSC(const char* ssid, const char* pass, const IPAddress& outIp, unsigned int outPort, unsigned int localPort)
+OSC::OSC(const char *ssid, const char *pass, const IPAddress &outIp, unsigned int outPort, unsigned int localPort)
     : _ssid(ssid), _pass(pass), _outIp(outIp), _outPort(outPort), _localPort(localPort)
 {
     _routeState = "/sprayar/microcontroller/state";
@@ -57,10 +57,8 @@ void OSC::receive()
     // }
 }
 
-void OSC::send(const char* route, const char* message)
+void OSC::send(OSCMessage &msg)
 {
-    OSCMessage msg(route);
-    msg.add(message);
     _Udp.beginPacket(_outIp, _outPort);
     msg.send(_Udp);
     _Udp.endPacket();
@@ -69,17 +67,21 @@ void OSC::send(const char* route, const char* message)
 
 void OSC::ping()
 {
-    send(_routePing, "PING");
+    OSCMessage msg(_routePing);
+    send(msg);
 }
 
 void OSC::sendCharge(float charge)
 {
-    // TODO: float richtig umwandeln
-    send(_routeCharge, charge < 3.5 ? "LOW" : "OK");
+    OSCMessage msg(_routeCharge);
+    msg.add(charge);
+    send(msg);
 }
 
 void OSC::sendState(bool isGrabbed, int appliedForce)
 {
-    // TODO: int richtig umwandeln
-    send(_routeState, isGrabbed ? "GRABBED" : "RELEASED");
+    OSCMessage msg(_routeState);
+    msg.add(isGrabbed);
+    msg.add(appliedForce);
+    send(msg);
 }

@@ -14,8 +14,7 @@ public:
     OSC(const char* ssid, const char* pass, const IPAddress& outIp, unsigned int outPort, unsigned int localPort);
     void setup();
     void receive();
-    void send(const char* route, const char* message);
-    void send(const char* route, float value);
+    void send(OSCMessage& msg);
     void sendState(bool isGrabbed, int appliedForce);
     void ping();
     void sendCharge(float charge);
