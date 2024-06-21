@@ -6,7 +6,7 @@
 class Touch
 {
 public:
-    Touch(int touchPin);
+    Touch(int);
     bool isTouched();
     void print();
 

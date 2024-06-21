@@ -5,22 +5,23 @@
 #include <Wire.h>
 #include "Adafruit_DRV2605.h"
 
-class Vibration
-{
-public:
-    Vibration();
-    enum VIBRATION_MODE {
-        PULSE,
-        HUMM,
-        BUZZ
-    };
-    void setVibration(VIBRATION_MODE mode);
-    void start();
-    void stop();
-
-private:
-    Adafruit_DRV2605 _drv;
-    VIBRATION_MODE _currentVibrationMode;
+enum VIBRATION_MODE {
+  NONE,
+  PULSE,
+  HUMM,
+  BUZZ
 };
 
-#endif // VIBRATION_H
+class Vibration {
+public:
+  Vibration(Adafruit_DRV2605*);
+  void setVibration(VIBRATION_MODE);
+  void start();
+  void stop();
+
+private:
+  Adafruit_DRV2605* _drv;
+  VIBRATION_MODE _currentVibrationMode;
+};
+
+#endif  // VIBRATION_H

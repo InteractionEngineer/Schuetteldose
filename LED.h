@@ -2,32 +2,49 @@
 #define LED_H
 
 #include <Arduino.h>
-class LED {
-  public:
-    LED(int pin);
-    void pulse(int, int, int);
-    void pulse(int, int);
-    void flash(int, int);
-    void flash(int);
-    void turnOff();
-    bool isBusy;
-  private:
-    void _resetAnimation(int, int, unsigned long);
-    void _resetAnimation(int, int, int, unsigned long);
-    void _actuallyFlash(unsigned long);
-    void _actuallyPulse(unsigned long);
-    int _pin;
-    int _flashCount;
-    int _targetFlashCount;
-    int _pulseCount;
-    int _targetPulseCount;
-    unsigned long _previousMillis;
-    int _state;
-    unsigned long _flashInterval;
-    unsigned long _pulseInterval;
-    int _fadeAmount;
-    int _brightness;
-    bool _terminate;
+
+// Define the states for the state machine
+enum LEDState {
+  IDLE,
+  PULSING,
+  FLASHING,
+  TURNING_OFF
 };
 
-#endif /* LED_H */
+class LED {
+public:
+  LED(int ledPin);
+  void turnOff();
+  void handleState();
+
+  void pulse(int, int, int);
+  void pulse(int, int);
+
+  void flash(int, int);
+  void flash(int);
+
+private:
+  int _pin;
+  bool _ledState;
+  unsigned long _previousMillis;
+  LEDState _state;
+
+  // pulsing
+  int _brightness;
+  int _fadeAmount;
+  int _pulseInterval;
+  int _pulseCount;
+  int _targetPulseCount;
+
+  // flashing
+  int _flashInterval;
+  int _flashCount;
+  int _targetFlashCount;
+
+  void _resetPulseAnimation(int, int, int);
+  void _resetFlashAnimation(int, int);
+  void _actuallyFlash(unsigned long);
+  void _actuallyPulse(unsigned long);
+};
+
+#endif  // LED_H

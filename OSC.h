@@ -11,13 +11,13 @@
 class OSC
 {
 public:
-    OSC(const char* ssid, const char* pass, const IPAddress& outIp, unsigned int outPort, unsigned int localPort);
+    OSC(const char* , const char*, const IPAddress&, unsigned int, unsigned int);
     void setup();
-    void receive(OSCMessage &msg);
-    void send(OSCMessage& msg);
-    void sendState(bool isGrabbed, int32_t appliedForce);
+    void receive(OSCMessage&);
+    void send(OSCMessage&);
+    void sendState(bool, int32_t);
     void ping();
-    void sendCharge(float charge);
+    void sendCharge(float);
 
 private:
     WiFiUDP _Udp;

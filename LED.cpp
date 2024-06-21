@@ -4,35 +4,28 @@ LED::LED(int ledPin) {
   _pin = ledPin;
   pinMode(_pin, OUTPUT);
 
-  isBusy = false;
-  
+  _state = IDLE;
   _flashCount = 0;
   _targetFlashCount = 0;
   _pulseCount = 0;
   _targetPulseCount = 0;
   _previousMillis = 0;
-  _state = 0; // same as LOW
+  _ledState = LOW;
   _flashInterval = 0;
   _pulseInterval = 0;
   _fadeAmount = 0;
   _brightness = 0;
-  _terminate = false;
 
-  digitalWrite(_pin, _state);
+  digitalWrite(_pin, _ledState);
 }
 
 void LED::pulse(int times, int fadeAmount, int pulseInterval) {
-  unsigned long currentPulseMillis = millis();
-
-  if (_targetPulseCount != times && !isBusy) _resetAnimation(times, fadeAmount, pulseInterval, currentPulseMillis);
-
-  if (!_terminate && _pulseCount < _targetPulseCount) {
-    if (currentPulseMillis - _previousMillis >= _pulseInterval) {
-      _actuallyPulse(currentPulseMillis);
-    }
-  } else if (_pulseCount >= _targetPulseCount) {
-    turnOff();
+  if (_state == IDLE) {
+    _resetPulseAnimation(times, fadeAmount, pulseInterval);
+    _state = PULSING;
   }
+
+  handleState();
 }
 
 void LED::pulse(int fadeAmount, int pulseInterval) {
@@ -40,51 +33,77 @@ void LED::pulse(int fadeAmount, int pulseInterval) {
 }
 
 void LED::flash(int times, int duration_ms) {
-  unsigned long currentFlashMillis = millis();
-
-  if (_targetFlashCount != times && !isBusy) _resetAnimation(times, duration_ms, currentFlashMillis);
-
-  if (!_terminate && _flashCount < _targetFlashCount * 2) {
-    if (currentFlashMillis - _previousMillis >= _flashInterval) {
-      _actuallyFlash(currentFlashMillis);
-    }
-  } else if (_flashCount >= _targetFlashCount * 2) {
-    turnOff();
+  if (_state == IDLE) {
+    _resetFlashAnimation(times, duration_ms);
+    _state = FLASHING;
   }
+
+  handleState();
 }
 
 void LED::flash(int duration_ms) {
   flash(1, duration_ms);
 }
 
-void LED::_resetAnimation(int times, int duration_ms, unsigned long currentMillis) {
-  _targetFlashCount = times;
-  _flashCount = 0;
-  _previousMillis = currentMillis;
-  _state = LOW;
-  _flashInterval = duration_ms;
-  digitalWrite(_pin, _state);
-  _terminate = false;
-  isBusy = true;
-}
-
-void LED::_resetAnimation(int times, int fadeAmount, int pulseInterval, unsigned long currentMillis) {
+void LED::_resetPulseAnimation(int times, int fadeAmount, int pulseInterval) {
   _targetPulseCount = times;
   _pulseCount = 0;
-  _previousMillis = currentMillis;
-  _state = 0;
+  _previousMillis = millis();
+  _ledState = 0;
   _fadeAmount = fadeAmount;
   _pulseInterval = pulseInterval;
-  analogWrite(_pin, _state);
-  _terminate = false;
-  isBusy = true;
+  analogWrite(_pin, _ledState);
+}
+
+void LED::_resetFlashAnimation(int times, int duration_ms) {
+  _targetFlashCount = times;
+  _flashCount = 0;
+  _previousMillis = millis();
+  _ledState = LOW;
+  _flashInterval = duration_ms;
+  digitalWrite(_pin, _ledState);
+}
+
+void LED::handleState() {
+  unsigned long currentMillis = millis();
+
+  switch (_state) {
+    case PULSING:
+      if (_pulseCount < _targetPulseCount) {
+        if (currentMillis - _previousMillis >= _pulseInterval) {
+          _actuallyPulse(currentMillis);
+        }
+      } else {
+        _state = TURNING_OFF;
+      }
+      break;
+      
+    case FLASHING:
+      if (_flashCount < _targetFlashCount * 2) {
+        if (currentMillis - _previousMillis >= _flashInterval) {
+          _actuallyFlash(currentMillis);
+        }
+      } else {
+        _state = TURNING_OFF;
+      }
+      break;
+      
+    case TURNING_OFF:
+      turnOff();
+      _state = IDLE;
+      break;
+
+    case IDLE:
+    default:
+      break;
+  }
 }
 
 void LED::_actuallyFlash(unsigned long currentMillis) {
   _previousMillis = currentMillis;
-  _state = !_state;
+  _ledState = !_ledState;
   _flashCount++;
-  digitalWrite(_pin, _state);
+  digitalWrite(_pin, _ledState);
 }
 
 void LED::_actuallyPulse(unsigned long currentMillis) {
@@ -100,10 +119,8 @@ void LED::_actuallyPulse(unsigned long currentMillis) {
 }
 
 void LED::turnOff() {
-  _terminate = true;
   _brightness = 0;
   _targetPulseCount = 0;
   _targetFlashCount = 0;
   digitalWrite(_pin, LOW);
-  isBusy = false;
 }

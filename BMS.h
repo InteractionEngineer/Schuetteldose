@@ -6,7 +6,7 @@
 class BMS
 {
 public:
-    BMS(int batteryPin, int usbPin, int thermistorPin);
+    BMS(int, int, int);
     float getVoltage();
     bool isCharging();
     float readThermistor();
