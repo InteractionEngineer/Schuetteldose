@@ -6,7 +6,7 @@
 class Force
 {
 public:
-    Force(int forcePin);
+    Force(int);
     int measure();
     void print();
 
