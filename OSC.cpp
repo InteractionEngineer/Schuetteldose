@@ -33,28 +33,30 @@ void OSC::setup()
     Serial.println(_localPort);
 }
 
-void OSC::receive()
+void OSC::receive(OSCMessage &msg)
 {
-    // OSCMessage msg;
-    // int size = _Udp.parsePacket();
 
-    // if (size > 0)
-    // {
-    //     while (size--)
-    //     {
-    //         msg.fill(_Udp.read());
-    //     }
-    //     if (!msg.hasError())
-    //     {
-    //         msg.dispatch("/led", led); // You need to implement the `led` function
-    //     }
-    //     else
-    //     {
-    //         _error = msg.getError();
-    //         Serial.print("error: ");
-    //         Serial.println(_error);
-    //     }
-    // }
+    int size = _Udp.parsePacket();
+
+    if (size > 0)
+    {
+        while (size--)
+        {
+            msg.fill(_Udp.read());
+        }
+        if (!msg.hasError())
+        {
+            Serial.println("Got a message");
+            float testVal = msg.getFloat(0);
+            Serial.println(testVal);
+        }
+        else
+        {
+            _error = msg.getError();
+            Serial.print("error: ");
+            Serial.println(_error);
+        }
+    }
 }
 
 void OSC::send(OSCMessage &msg)
@@ -68,6 +70,7 @@ void OSC::send(OSCMessage &msg)
 void OSC::ping()
 {
     OSCMessage msg(_routePing);
+    msg.add("PING");
     send(msg);
 }
 
@@ -78,7 +81,7 @@ void OSC::sendCharge(float charge)
     send(msg);
 }
 
-void OSC::sendState(bool isGrabbed, int appliedForce)
+void OSC::sendState(boolean isGrabbed, int32_t appliedForce)
 {
     OSCMessage msg(_routeState);
     msg.add(isGrabbed);

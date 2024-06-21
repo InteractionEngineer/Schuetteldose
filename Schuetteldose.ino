@@ -12,7 +12,7 @@ Force appliedForce(A3);
 
 // TODO: Initialisierung führt zu einem RTC (Real Time Clock) Watchdog Timer Fehler
 Vibration hapticFeedback();
-OSC oscHandler("WIFI_SSID", "WIFI_PWD", 8888, 9999, IPAddress(10, 40, 10, 105));
+OSC oscHandler("WIFI_SSID", "WIFI_PWD",IPAddress(192, 168, 178, 54), 7000, 7001);
 
 bool atStartup;
 
@@ -34,10 +34,18 @@ void setup()
   isFilled = true;
   oscHandler.setup();
   atStartup = true;
+  lastPingMillis = millis();
+  lastBatteryMillis = millis();
+}
+
+void oscReceiveWrapper(OSCMessage &msg) {
+    oscHandler.receive(msg);
 }
 
 void loop()
 {
+  OSCMessage msg1("/test");
+  msg1.dispatch("/test", oscReceiveWrapper);
   transmitState();
 
   handleFeedback();

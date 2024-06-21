@@ -5,7 +5,7 @@
 #include <WiFiUdp.h>
 #include <OSCMessage.h>
 #include <OSCBundle.h>
-#include <OSCData.h>
+
 #include <string>
 
 class OSC
@@ -13,9 +13,9 @@ class OSC
 public:
     OSC(const char* ssid, const char* pass, const IPAddress& outIp, unsigned int outPort, unsigned int localPort);
     void setup();
-    void receive();
+    void receive(OSCMessage &msg);
     void send(OSCMessage& msg);
-    void sendState(bool isGrabbed, int appliedForce);
+    void sendState(bool isGrabbed, int32_t appliedForce);
     void ping();
     void sendCharge(float charge);
 
