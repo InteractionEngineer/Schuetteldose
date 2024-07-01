@@ -27,7 +27,7 @@ const int INTERVAL_BATTERY = 30 * 1000;
 const int INTERVAL_PING = 1 * 1000;
 
 void setup() {
-  switchLED.pulse(3, 5, 30);
+  switchLED.pulse(2, 5, 30);
 
   Serial.begin(115200);
 
@@ -80,8 +80,10 @@ void checkBattery(float voltage) {
 }
 
 void handleCharging(float voltage) {
-  if (voltage < 3.8 && batteryManagement.isCharging()) switchLED.pulse(1, 1);
-  else if (voltage >= 3.8 && batteryManagement.isCharging()) switchLED.pulse(5, 10);
+  if (batteryManagement.isCharging()) {
+    if (voltage > 4.3) switchLED.pulse(1, 1);  // Error: Plugged in but no connection to battery
+    else switchLED.pulse(5, 10); // Charging
+  }  
 }
 
 void transmitState(int force, bool touched) {
@@ -91,10 +93,11 @@ void transmitState(int force, bool touched) {
 
 void handleFeedback(int force) {
   if (force > 0 && isFilled) {
-    if (force == 1) hapticFeedback.setVibration(SPRAY_LIGHT);
-    else if (force == 2) hapticFeedback.setVibration(SPRAY_MEDIUM);
-    else if (force == 3) hapticFeedback.setVibration(SPRAY_STRONG);
-    else if (force >= 4) hapticFeedback.setVibration(SPRAY_MAX);
+    if (force == 1) hapticFeedback.setVibration(JUMPSTART);
+    else if (force == 2) hapticFeedback.setVibration(SPRAY_LIGHT);
+    else if (force < 5) hapticFeedback.setVibration(SPRAY_MEDIUM);
+    else if (force < 8) hapticFeedback.setVibration(SPRAY_STRONG);
+    else if (force >= 8) hapticFeedback.setVibration(SPRAY_MAX);
     else Serial.println("ERROR: There is a problem measuring the appliedForce.");
   } else return;
 

@@ -22,8 +22,10 @@ float BMS::getVoltage()
 
 bool BMS::isCharging()
 {
+  // TODO: 0V!
     float measuredVUsb = analogRead(_USB);
     float usbVoltage = measuredVUsb * 2 / 1024;
+    // Serial.println(usbVoltage);
     return usbVoltage > 4;
 }
 
