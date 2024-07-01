@@ -28,7 +28,7 @@ const int INTERVAL_BATTERY = 30 * 1000;
 const int INTERVAL_PING = 1 * 1000;
 
 void setup() {
-  switchLED.pulse(2, 5, 30);
+  switchLED.pulse(3, 5, 20);
 
   Serial.begin(115200);
 
@@ -104,16 +104,24 @@ void checkBattery(float voltage) {
 void handleCharging(float voltage) {
   if (batteryManagement.isCharging()) {
     if (voltage > 4.3) switchLED.pulse(1, 1);  // Error: Plugged in but no connection to battery
-    else switchLED.pulse(5, 10);               // Charging
+    else switchLED.pulse(5, 40);               // Charging
   }
 }
 
 void transmitState(int force, bool touched) {
-  // TODO: Massefehler, wenn Dose ohne Stromanschluss: Zu geringe Differenz, um Sensor auszulösen (?)
-  oscHandler.sendState(touched, force);
+  int mappedForce;
+
+  if (force > 7)
+    mappedForce = 3;
+  else if (force > 4)
+    mappedForce = 2;
+  else if (force > 0)
+    mappedForce = 1;
+  else mappedForce = 0;
+
+  oscHandler.sendState(touched, mappedForce);
 }
 
-// TODO: 1-3 auch für OSC
 void handleFeedback(int force) {
   if (force > 0 && isFilled) {
     if (force == 1) hapticFeedback.setVibration(JUMPSTART);
