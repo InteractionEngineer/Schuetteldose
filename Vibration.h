@@ -12,7 +12,8 @@ enum VIBRATION_MODE {
   SPRAY_MEDIUM,
   SPRAY_STRONG,
   SPRAY_MAX,
-  ERROR
+  ERROR,
+  FILL
 };
 
 class Vibration {

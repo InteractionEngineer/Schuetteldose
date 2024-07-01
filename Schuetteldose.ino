@@ -9,7 +9,7 @@
 
 LED switchLED(12);
 Touch housing(A6);
-BMS batteryManagement(A13, A12, A2);
+BMS batteryManagement(A13, A4, A2);
 Force appliedForce(A3);
 Adafruit_DRV2605 drv;
 Vibration hapticFeedback(&drv);
@@ -17,6 +17,7 @@ OSC oscHandler(WIFI_SSID, WIFI_PWD, PARTNER_IP, 8888, 9999);
 
 // controlled from outside (via OSC)
 bool isFilled;
+bool refilling;
 
 // controlled by loop
 long lastBatteryMillis;
@@ -36,6 +37,7 @@ void setup() {
   drv.selectLibrary(1);
 
   isFilled = true;
+  refilling = false;
   lastPingMillis = millis();
   lastBatteryMillis = millis();
 
@@ -43,10 +45,6 @@ void setup() {
 }
 
 void loop() {
-  // TODO: muss die message jeden Loop neu instantiiert werden? Kommen überhaupt alle Daten innerhalb eines Loops?
-  // OSCMessage msg1("/test");
-  // msg1.dispatch("/test", oscReceiveWrapper);
-
   int force = appliedForce.measure();
   bool touched = housing.isTouched();
   float voltage = batteryManagement.getVoltage();
@@ -57,11 +55,35 @@ void loop() {
   checkBattery(voltage);
   handleCharging(voltage);
   switchLED.handleState();
+  oscReceiveWrapper();
 }
 
-void oscReceiveWrapper(OSCMessage &msg) {
+void oscReceiveWrapper() {
+  OSCMessage msg;
   oscHandler.receive(msg);
-  // TODO: boolean isFilled manipulieren
+  if (!msg.hasError()) {
+    msg.dispatch(
+      "/sprayar/microcontroller/Refill/Start", startRefill);
+    msg.dispatch(
+      "/sprayar/microcontroller/Refill/Stop", stopRefill);
+    msg.dispatch(
+      "/sprayar/microcontroller/FillState/Full", setFull);
+    msg.dispatch(
+      "/sprayar/microcontroller/FillState/Empty", setEmpty);
+  }
+}
+
+void startRefill(OSCMessage&) {
+  refilling = true;
+}
+void stopRefill(OSCMessage&) {
+  refilling = false;
+}
+void setFull(OSCMessage&) {
+  isFilled = true;
+}
+void setEmpty(OSCMessage&) {
+  isFilled = false;
 }
 
 void sendPing() {
@@ -82,8 +104,8 @@ void checkBattery(float voltage) {
 void handleCharging(float voltage) {
   if (batteryManagement.isCharging()) {
     if (voltage > 4.3) switchLED.pulse(1, 1);  // Error: Plugged in but no connection to battery
-    else switchLED.pulse(5, 10); // Charging
-  }  
+    else switchLED.pulse(5, 10);               // Charging
+  }
 }
 
 void transmitState(int force, bool touched) {
@@ -91,6 +113,7 @@ void transmitState(int force, bool touched) {
   oscHandler.sendState(touched, force);
 }
 
+// TODO: 1-3 auch für OSC
 void handleFeedback(int force) {
   if (force > 0 && isFilled) {
     if (force == 1) hapticFeedback.setVibration(JUMPSTART);
@@ -99,6 +122,8 @@ void handleFeedback(int force) {
     else if (force < 8) hapticFeedback.setVibration(SPRAY_STRONG);
     else if (force >= 8) hapticFeedback.setVibration(SPRAY_MAX);
     else Serial.println("ERROR: There is a problem measuring the appliedForce.");
+  } else if (refilling) {
+    hapticFeedback.setVibration(FILL);
   } else return;
 
   hapticFeedback.start();

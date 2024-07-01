@@ -37,14 +37,14 @@ void OSC::receive(OSCMessage &msg) {
     while (size--) {
       msg.fill(_Udp.read());
     }
-    if (!msg.hasError()) {
-      Serial.println("Got a message");
-      float testVal = msg.getFloat(0);
-      Serial.println(testVal);
-    } else {
+    if (msg.hasError()) {
       _error = msg.getError();
       Serial.print("error: ");
       Serial.println(_error);
+    } else {
+      char str[100];
+      msg.getString(0, str, 100);
+      Serial.println(str);
     }
   }
 }

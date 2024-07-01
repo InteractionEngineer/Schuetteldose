@@ -24,7 +24,6 @@ int Force::measure() {
   //     fsrForce = fsrConductance - 1000;
   //     fsrForce /= 30;
   // }
-  Serial.println(fsrForce);
   return fsrForce < 0 ? 0 : fsrForce;
 }
 

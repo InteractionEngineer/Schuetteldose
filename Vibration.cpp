@@ -34,6 +34,10 @@ void Vibration::setVibration(VIBRATION_MODE mode) {
       _drv->setWaveform(0, 118);
       _currentVibrationMode = ERROR;
       break;
+    case FILL:
+      _drv->setWaveform(0, 70);
+      _currentVibrationMode = FILL;
+      break;
     default:
       _currentVibrationMode = NONE;
       break;
