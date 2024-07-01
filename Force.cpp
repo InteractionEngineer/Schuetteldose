@@ -9,28 +9,25 @@ Force::Force(int forcePin)
 int Force::measure()
 {
     float fsrVoltage_MV = analogRead(_pin);
-    if (fsrVoltage_MV == 0)
-        return 0;
-    // Wert von 0 bis 10 als Übergang bis 100N Sensor wieder iengebaut ist
-    else return fsrVoltage_MV/4095 * 10;
+    if (fsrVoltage_MV == 0) return 0;
 
-    // int fsrResistance = 3300 - fsrVoltage_MV;
-    // fsrResistance *= 10000; // 10K resistor in voltage divider
-    // fsrResistance /= fsrVoltage_MV;
+    int fsrResistance = 3300 - fsrVoltage_MV;
+    fsrResistance *= 10000; // 10K resistor in voltage divider
+    fsrResistance /= fsrVoltage_MV;
 
-    // int fsrConductance = 1000000; // 1M ohm (from documentation)
-    // fsrConductance /= fsrResistance;
-    // int fsrForce;
+    int fsrConductance = 1000000; // 1M ohm (from documentation)
+    fsrConductance /= fsrResistance;
+    int fsrForce;
 
-    // if (fsrConductance <= 1000) // force-curve 1 (from documentation)
-    //     fsrForce = fsrConductance / 80;
-    // else // force-curve 2 (from documentation)
-    // {
-    //     fsrForce = fsrConductance - 1000;
-    //     fsrForce /= 30;
-    // }
+    if (fsrConductance <= 1000) // force-curve 1 (from documentation)
+        fsrForce = fsrConductance / 80;
+    else // force-curve 2 (from documentation)
+    {
+        fsrForce = fsrConductance - 1000;
+        fsrForce /= 30;
+    }
 
-    // return fsrForce < 0 ? 0 : fsrForce;
+    return fsrForce < 0 ? 0 : fsrForce;
 }
 
 void Force::print()

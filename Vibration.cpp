@@ -10,20 +10,30 @@ void Vibration::setVibration(VIBRATION_MODE mode) {
   if (mode == _currentVibrationMode) return;
 
   switch (mode) {
-    case PULSE:
-      _drv->setWaveform(0, 55);  // play effect
-      _drv->setWaveform(1, 0);   // end waveform
-      _currentVibrationMode = PULSE;
+    case SPRAY_LIGHT:
+      _drv->setWaveform(0, 120);  // play effect
+      _drv->setWaveform(1, 0);    // end waveform
+      _currentVibrationMode = SPRAY_LIGHT;
       break;
-    case BUZZ:
-      _drv->setWaveform(0, 48);  // play effect
-      _drv->setWaveform(1, 0);   // end waveform
-      _currentVibrationMode = BUZZ;
-      break;
-    case HUMM:
+    case SPRAY_MEDIUM:
       _drv->setWaveform(0, 119);  // play effect
       _drv->setWaveform(1, 0);    // end waveform
-      _currentVibrationMode = HUMM;
+      _currentVibrationMode = SPRAY_MEDIUM;
+      break;
+    case SPRAY_STRONG:
+      _drv->setWaveform(0, 65);  // play effect
+      _drv->setWaveform(1, 0);   // end waveform
+      _currentVibrationMode = SPRAY_STRONG;
+      break;
+    case SPRAY_MAX:
+      _drv->setWaveform(0, 64);  // play effect
+      _drv->setWaveform(1, 0);   // end waveform
+      _currentVibrationMode = SPRAY_MAX;
+      break;
+    case ERROR:
+      _drv->setWaveform(0, 118);  // play effect
+      _drv->setWaveform(1, 0);    // end waveform
+      _currentVibrationMode = ERROR;
       break;
     default:
       _currentVibrationMode = NONE;

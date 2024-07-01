@@ -7,15 +7,17 @@
 
 enum VIBRATION_MODE {
   NONE,
-  PULSE,
-  HUMM,
-  BUZZ
+  SPRAY_LIGHT,
+  SPRAY_MEDIUM,
+  SPRAY_STRONG,
+  SPRAY_MAX,
+  ERROR
 };
 
 class Vibration {
 public:
-  Vibration(Adafruit_DRV2605*);
-  void setVibration(VIBRATION_MODE);
+  Vibration(Adafruit_DRV2605* drv);
+  void setVibration(VIBRATION_MODE mode);
   void start();
   void stop();
 

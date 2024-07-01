@@ -15,8 +15,6 @@ Adafruit_DRV2605 drv;
 Vibration hapticFeedback(&drv);
 OSC oscHandler(WIFI_SSID, WIFI_PWD, PARTNER_IP, 8888, 9999);
 
-bool atStartup;
-
 // controlled from outside (via OSC)
 bool isFilled;
 
@@ -32,14 +30,12 @@ void setup() {
   switchLED.pulse(3, 5, 30);
 
   Serial.begin(115200);
-  delay(2000); // time to initialze
 
   drv.begin();
   drv.setMode(DRV2605_MODE_INTTRIG);  // internal trigger, listens for go() command
   drv.selectLibrary(1);
 
   isFilled = true;
-  atStartup = true;
   lastPingMillis = millis();
   lastBatteryMillis = millis();
 
@@ -47,40 +43,60 @@ void setup() {
 }
 
 void loop() {
-  OSCMessage msg1("/test");
-  msg1.dispatch("/test", oscReceiveWrapper);
+  // TODO: muss die message jeden Loop neu instantiiert werden? Kommen überhaupt alle Daten innerhalb eines Loops?
+  // OSCMessage msg1("/test");
+  // msg1.dispatch("/test", oscReceiveWrapper);
 
-  transmitState();
-  handleFeedback();
+  int force = appliedForce.measure();
+  bool touched = housing.isTouched();
+  float voltage = batteryManagement.getVoltage();
 
-  // TODO: Der Wechsel von Pulse zu Flash funktioniert nicht, die LED bleibt dunkel
-  if (housing.isTouched()) switchLED.flash(500);
+  transmitState(force, touched);
+  handleFeedback(force);
+  sendPing();
+  checkBattery(voltage);
+  handleCharging(voltage);
   switchLED.handleState();
 }
 
 void oscReceiveWrapper(OSCMessage &msg) {
   oscHandler.receive(msg);
+  // TODO: boolean isFilled manipulieren
 }
 
-void transmitState() {
-  if (millis() - lastBatteryMillis > INTERVAL_BATTERY) {
-    oscHandler.sendCharge(batteryManagement.getVoltage());
-    lastBatteryMillis = millis();
-  }
-
+void sendPing() {
   if (millis() - lastPingMillis > INTERVAL_PING) {
     oscHandler.ping();
     lastPingMillis = millis();
   }
+}
 
-  if (isFilled && housing.isTouched()) {
-    oscHandler.sendState(true, appliedForce.measure());
+void checkBattery(float voltage) {
+  if (millis() - lastBatteryMillis > INTERVAL_BATTERY) {
+    oscHandler.sendCharge(voltage);
+    if (voltage < 3) switchLED.pulse(30, 1);
+    lastBatteryMillis = millis();
   }
 }
 
-void handleFeedback() {
-  if (housing.isTouched() && appliedForce.measure() > 0) {
-    hapticFeedback.setVibration(BUZZ);
-    hapticFeedback.start();
-  }
+void handleCharging(float voltage) {
+  if (voltage < 3.8 && batteryManagement.isCharging()) switchLED.pulse(1, 1);
+  else if (voltage >= 3.8 && batteryManagement.isCharging()) switchLED.pulse(5, 10);
+}
+
+void transmitState(int force, bool touched) {
+  // TODO: Massefehler, wenn Dose ohne Stromanschluss: Zu geringe Differenz, um Sensor auszulösen (?)
+  oscHandler.sendState(touched, force);
+}
+
+void handleFeedback(int force) {
+  if (force > 0 && isFilled) {
+    if (force == 1) hapticFeedback.setVibration(SPRAY_LIGHT);
+    else if (force == 2) hapticFeedback.setVibration(SPRAY_MEDIUM);
+    else if (force == 3) hapticFeedback.setVibration(SPRAY_STRONG);
+    else if (force >= 4) hapticFeedback.setVibration(SPRAY_MAX);
+    else Serial.println("ERROR: There is a problem measuring the appliedForce.");
+  } else return;
+
+  hapticFeedback.start();
 }
