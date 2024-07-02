@@ -25,7 +25,7 @@ int Force::measure() {
   //     fsrForce /= 30;
   // }
 
-  Serial.println(fsrForce);
+  if (fsrForce > 0) Serial.println(fsrForce);
   return fsrForce < 0 ? 0 : fsrForce;
 }
 

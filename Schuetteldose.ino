@@ -95,8 +95,10 @@ void sendPing() {
 
 void checkBattery(float voltage) {
   if (millis() - lastBatteryMillis > INTERVAL_BATTERY) {
+    float thermistorR = batteryManagement.readThermistor();
     oscHandler.sendCharge(voltage);
-    if (voltage < 3) switchLED.pulse(30, 1);
+    if (voltage < 3 ) switchLED.pulse(3, 1);
+    if (thermistorR > 25000) switchLED.pulse(30, 1);
     lastBatteryMillis = millis();
   }
 }
