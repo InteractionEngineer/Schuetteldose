@@ -3,15 +3,14 @@
 
 #include <Arduino.h>
 
-class Touch
-{
+class Touch {
 public:
-    Touch(int touchPin);
-    bool isTouched();
-    void print();
+  Touch(int touchPin);
+  bool isTouched();
+  void print();
 
 private:
-    int _pin;
+  int _pin;
 };
 
-#endif // TOUCH_H
+#endif  // TOUCH_H

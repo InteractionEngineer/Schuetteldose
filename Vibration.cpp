@@ -11,7 +11,7 @@ void Vibration::setVibration(VIBRATION_MODE mode) {
 
   switch (mode) {
     case JUMPSTART:
-      _drv->setWaveform(0, 1); // zum "Loseisen"
+      _drv->setWaveform(0, 1);  // zum "Loseisen"
       _currentVibrationMode = JUMPSTART;
       break;
     case SPRAY_LIGHT:

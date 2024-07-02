@@ -3,15 +3,14 @@
 
 #include <Arduino.h>
 
-class Force
-{
+class Force {
 public:
-    Force(int forcePin);
-    int measure();
-    void print();
+  Force(int forcePin);
+  int measure();
+  void print();
 
 private:
-    int _pin;
+  int _pin;
 };
 
-#endif // FORCE_H
+#endif  // FORCE_H

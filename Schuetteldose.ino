@@ -28,8 +28,6 @@ const int INTERVAL_BATTERY = 30 * 1000;
 const int INTERVAL_PING = 1 * 1000;
 
 void setup() {
-  switchLED.pulse(3, 5, 20);
-
   Serial.begin(115200);
 
   drv.begin();
@@ -41,7 +39,7 @@ void setup() {
   lastPingMillis = millis();
   lastBatteryMillis = millis();
 
-  oscHandler.setup();
+  oscHandler.setup(&switchLED);
 }
 
 void loop() {

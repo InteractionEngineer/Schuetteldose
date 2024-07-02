@@ -5,17 +5,23 @@ OSC::OSC(const char *ssid, const char *pass, const IPAddress &outIp, unsigned in
   _routeState = "/sprayar/microcontroller/state";
   _routePing = "/sprayar/microcontroller/ping";
   _routeCharge = "/sprayar/microcontroller/charge";
+  _previousMillis = millis();
 }
 
-void OSC::setup() {
+void OSC::setup(LED *ledInstance) {
   Serial.println();
   Serial.print("Connecting to ");
   Serial.println(_ssid.c_str());
   WiFi.begin(_ssid.c_str(), _pass.c_str());
 
+  unsigned long previousMillis = millis();  // Store the current time
   while (WiFi.status() != WL_CONNECTED) {
-    delay(500);  // TODO: change to millis
-    Serial.print(".");
+    unsigned long currentMillis = millis();
+    if (currentMillis - previousMillis >= 500) {
+      previousMillis = currentMillis;  // Update the stored time
+      Serial.print(".");
+      ledInstance->pulse(5, 20);
+    }
   }
   Serial.println("");
 
@@ -28,6 +34,7 @@ void OSC::setup() {
   Serial.print("Local port: ");
   Serial.println(_localPort);
 }
+
 
 void OSC::receive(OSCMessage &msg) {
 
