@@ -1,7 +1,7 @@
 #### Context
 
 This repository holds the "firmware" for a digitalized spray can and supplements [the main repo](https://github.com/InteractionEngineer/SprayAR).
-See intstructions below to learn about how we build the spray can.
+See intstructions below to learn about how we build the spray can. To connect the Schütteldose (spray can) with your Unity application read its output with a baudrate of 115200. It will display its ip adress after connecting to your network successfully.
 
 # Firmware
 
@@ -71,6 +71,6 @@ I also provided you a [sliced file](https://github.com/InteractionEngineer/Schue
 6. wire in the switch
 7. use super glue to attach the inner to the outer components tray
 
-## Known issues
+# Known issues
 * The 9-DOF Sensor is not utilized yet but will be helpful when we implement a virtual representation of the spray can in Unity.
 * The touch sensor recalibrates itslef after a while so it can not check for "grab duration" as intendet - it's better for detecting changes.
