@@ -17,13 +17,7 @@ int Force::measure() {
   fsrConductance /= fsrResistance;
   int fsrForce;
 
-  // if (fsrConductance <= 1000) // force-curve 1 (from documentation)
-  fsrForce = fsrConductance / 15;  // orig.: 80
-  // else // force-curve 2 (from documentation)
-  // {
-  //     fsrForce = fsrConductance - 1000;
-  //     fsrForce /= 30;
-  // }
+  fsrForce = fsrConductance / 15;  // bring observed values to 0-10 range
 
   return fsrForce < 0 ? 0 : fsrForce;
 }
