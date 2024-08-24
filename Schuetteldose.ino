@@ -95,8 +95,8 @@ void checkBattery(float voltage) {
   if (millis() - lastBatteryMillis > INTERVAL_BATTERY) {
     float thermistorR = batteryManagement.readThermistor();
     oscHandler.sendCharge(voltage);
-    if (voltage < 3 ) switchLED.pulse(3, 1);
-    if (thermistorR > 25000) switchLED.pulse(30, 1);
+    if (voltage < 3.5) switchLED.pulse(3, 1);         // low battery
+    if (thermistorR > 25000) switchLED.pulse(30, 1);  // battery too hot
     lastBatteryMillis = millis();
   }
 }
@@ -111,9 +111,9 @@ void handleCharging(float voltage) {
 void transmitState(int force, bool touched) {
   int mappedForce;
 
-  if (force > 7)
+  if (force > 9)
     mappedForce = 3;
-  else if (force > 4)
+  else if (force > 5)
     mappedForce = 2;
   else if (force > 0)
     mappedForce = 1;
@@ -127,8 +127,8 @@ void handleFeedback(int force) {
     if (force == 1) hapticFeedback.setVibration(JUMPSTART);
     else if (force == 2) hapticFeedback.setVibration(SPRAY_LIGHT);
     else if (force < 5) hapticFeedback.setVibration(SPRAY_MEDIUM);
-    else if (force < 8) hapticFeedback.setVibration(SPRAY_STRONG);
-    else if (force >= 8) hapticFeedback.setVibration(SPRAY_MAX);
+    else if (force < 9) hapticFeedback.setVibration(SPRAY_STRONG);
+    else if (force >= 9) hapticFeedback.setVibration(SPRAY_MAX);
     else Serial.println("ERROR: There is a problem measuring the appliedForce.");
   } else if (refilling) {
     hapticFeedback.setVibration(FILL);
