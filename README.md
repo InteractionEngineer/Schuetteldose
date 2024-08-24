@@ -74,3 +74,4 @@ I also provided you a [sliced file](https://github.com/InteractionEngineer/Schue
 # Known issues
 * The 9-DOF Sensor is not utilized yet but will be helpful when we implement a virtual representation of the spray can in Unity.
 * The touch sensor recalibrates itslef after a while so it can not check for "grab duration" as intendet - it's better for detecting changes.
+* The vibration motor needs a high current signal at the beginning when "starting soft". It seems to sometimes get stuck, this is taken care of in the codebase.

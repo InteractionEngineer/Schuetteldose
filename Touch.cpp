@@ -6,7 +6,7 @@ Touch::Touch(int touchPin) {
 }
 
 bool Touch::isTouched() {
-  return digitalRead(_pin);  // mögliche Fehlerquelle, war vorher ohne Vergleich zu HIGH
+  return digitalRead(_pin);
 }
 
 void Touch::print() {

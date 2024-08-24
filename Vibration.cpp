@@ -11,7 +11,7 @@ void Vibration::setVibration(VIBRATION_MODE mode) {
 
   switch (mode) {
     case JUMPSTART:
-      _drv->setWaveform(0, 1);  // zum "Loseisen"
+      _drv->setWaveform(0, 1);  // to free the motor if stuck, happens often at low current
       _currentVibrationMode = JUMPSTART;
       break;
     case SPRAY_LIGHT:
